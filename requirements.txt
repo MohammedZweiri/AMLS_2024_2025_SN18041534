@@ -1,0 +1,17 @@
+# Libraries
+pylint
+requests
+numpy
+pandas
+mysql-connector-python
+pymongo
+dnspython
+folktables
+scikit-learn
+matplotlib
+seaborn
+fairlearn
+ucimlrepo
+scikit-learn
+shap
+datetime
