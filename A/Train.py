@@ -4,6 +4,7 @@ import os
 import pandas as pd 
 import matplotlib.pyplot as plt
 import numpy as np
+import time
 
 #==========this libraries for the models =============
 from sklearn.ensemble import RandomForestClassifier
@@ -13,7 +14,10 @@ from PIL import ImageFont
 #========== This libraries for getting the result of accurcy and confusion matrix of the model =======
 from sklearn.metrics import confusion_matrix, classification_report,accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, ConfusionMatrixDisplay
 from pathlib import Path
-from sklearn import tree
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import export_text
+from sklearn.tree import plot_tree
+
 import medmnist
 from medmnist import INFO, Evaluator
 
@@ -38,21 +42,21 @@ def dataset_download(dataset_name):
     
 
     if train_dataset.imgs.ndim == 3:
-        print("Adding channel to images...")
+        #print("Adding channel to images...")
         train_dataset.imgs = np.expand_dims(train_dataset.imgs, axis=-1)
 
     print("Validation Dataset")
     
 
     if validation_dataset.imgs.ndim == 3:
-        print("Adding channel to images...")
+        #print("Adding channel to images...")
         validation_dataset.imgs = np.expand_dims(validation_dataset.imgs, axis=-1)
 
     print("Testing Dataset")
     
 
     if test_dataset.imgs.ndim == 3:
-        print("Adding channel to images...")
+        #print("Adding channel to images...")
         test_dataset.imgs = np.expand_dims(test_dataset.imgs, axis=-1)
 
     print("Shapes of images")
@@ -99,41 +103,78 @@ def visualise_subset(train_dataset):
     plt.savefig("figures/subset_images.jpeg")
     plt.close()
 
-def descision_tree():
+def descision_tree_training(x_train, x_val, x_test, y_train, y_val, y_test):
 
-    accuracy_test_score = []
+    accuracy_test_scores = []
     maximum_tree_depth = []
-    maximum_features = []
+    maximum_No_features = []
+    minimum_sample_number = []
 
-    for maximum_features in range(1,30):
-        for maximum_depth in range(1,30):
-            classifier = tree.DecisionTreeClassifier(max_features=maximum_features, max_depth=maximum_depth, criterion='entropy', random_state=0)
-            classifier
-    tree_params={
-    'criterion':'entropy'
-        }
-    clf = tree.DecisionTreeClassifier( **tree_params )
+    for sample_number in range(2,31):
+        for maximum_features in range(1,30):
+            for maximum_depth in range(1,30):
+                print("############# ############")
+                print(f"The current iteration has the minimum sample split of {sample_number}, maximum features of {maximum_features} and tree depth of {maximum_depth}")
+                
+                classifier = DecisionTreeClassifier(min_samples_split=sample_number,max_features=maximum_features, max_depth=maximum_depth, criterion='entropy', random_state=0)
+                classifier.fit(x_train, y_train)
+                predict_y = classifier.predict(x_val)
+                accuracy_test = accuracy_score(y_val, predict_y)
 
-    return None
+                print(f"training accuracy score {accuracy_test}")
+                print("\n")
+                
+                accuracy_test_scores.append(accuracy_test)
+                maximum_No_features.append(maximum_features)
+                maximum_tree_depth.append(maximum_depth)
+                minimum_sample_number.append(sample_number)
+                #time.sleep(0.5)
+
+    
+    highest_accuracy = max(accuracy_test_scores)
+    highest_accuracy_index = accuracy_test_scores.index(highest_accuracy)
+    maximum_depth = maximum_tree_depth[highest_accuracy_index]
+    maximum_features = maximum_No_features[highest_accuracy_index]
+    sample_number = minimum_sample_number[highest_accuracy_index]
+
+    # plot_accuray(maximum_No_features, maximum_tree_depth, accuracy_test_scores)
+    print(f"The highest accuracy is {highest_accuracy}, which was achieved via {maximum_depth} tree depth and {maximum_features} features with minimum sample split of {sample_number}")
+
+    classifier = DecisionTreeClassifier(min_samples_split=sample_number,max_features=maximum_features, max_depth=maximum_depth, criterion='entropy', random_state=0)
+    classifier.fit(x_train, y_train)
+    predict_y = classifier.predict(x_test)
+    accuracy_test = accuracy_score(y_test, predict_y)
+    print(f"The test accuracy is {accuracy_test}")
+
+    feature_importances = classifier.feature_importances_ 
+    important_features = [(index, importance) for index, importance in enumerate(feature_importances) if importance > 0] 
+    # Print the important features 
+    print("Important features and their importance scores:") 
+    feature_names = []
+    for feature_index, importance in important_features: 
+        
+        print(f"Feature {feature_index}: {importance:.4f}") # To visualize the decision paths and features used in splits 
+        feature_names.append(f"Feature {feature_index}")
+
+    tree_rules = export_text(classifier) 
+    #print(tree_rules)
+
+    plt.figure()
+    plt.bar(important_features,feature_importances)
+    plt.xticks(rotation=45)
+    plt.ylabel('feature importance')
+    plt.savefig("decision_tree_features_importance.png")
+   
+
+
+
+
+    return accuracy_test_scores, maximum_tree_depth, maximum_No_features, minimum_sample_number, sample_number, maximum_depth, maximum_features, highest_accuracy
 
 def random_forrest():
 
 
     return None
-
-def save_model(model, model_name):
-    model_structure = model.to_json()
-
-    file_path = Path(f"model/{model_name}.json")
-    file_path.write_text(model_structure)
-    model.save_weights(f"{model_name}.weights.h5")
-
-def load_model(model_name):
-    file_path = Path(f"model/{model_name}.json")
-    model_structure = file_path.read_text()
-    model = model_from_json(model_structure)
-    model.load_weights(f"{model_name}.weights.h5")
-    return model
 
 def evaluate_model(true_labels, predicted_labels, predict_probs, label_names):
     if(true_labels.ndim==2):
@@ -161,26 +202,15 @@ def evaluate_model(true_labels, predicted_labels, predict_probs, label_names):
         plt.yticks(tick_marks, label_names)
         plt.savefig('figures/Confusion_Matrix_test1.png')
 
-def plot_accuray_loss(model_history):
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(20,6), dpi=160)
-    accuracy = model_history.history['accuracy']
-    validation_accuracy = mode=model_history.history['val_accuracy']
-    epochs = range(1, len(accuracy)+1)
-    ax1.plot(epochs, accuracy, label="Training Accuracy")
-    ax1.plot(epochs, validation_accuracy, label="Validation Accuracy")
-    ax1.set_title('Training and validation accuracy')
-    ax1.legend()
-    ax1.grid()
-
-    loss = model_history.history['loss']
-    val_loss = model_history.history['val_loss']
-
-    ax2.plot(epochs, loss, label="Training loss")
-    ax2.plot(epochs, val_loss, label="Validation loss")
-    ax2.set_title('Training and validation loss')
-    ax2.legend()
-    ax2.grid()
-    fig.savefig('figures/CNN_accuracy_loss_test1.png')
+def visualise_tree(tree_to_print):
+    plt.figure()
+    fig, axes = plt.subplots(nrows = 1,ncols = 1,figsize = (10,10), dpi=800)
+    plot_tree(tree_to_print,
+               feature_names = iris.feature_names,
+               class_names=iris.target_names, 
+               filled = True,
+              rounded=True)
+    plt.show()
 
 
 
@@ -197,54 +227,14 @@ if __name__=="__main__":
     train_dataset, validation_dataset, test_dataset = normalize_dataset(train_dataset, validation_dataset, test_dataset)
 
     visualise_subset(train_dataset)
-    # print(validation_dataset)
-    # print(test_dataset)
 
-
-    # One-hot encoding of labels (multi-class classification)
-    # train_labels = to_categorical(train_dataset.labels, num_classes=8)
-    # val_labels = to_categorical(validation_dataset.labels, num_classes=8)
-
-    # model = Sequential()
-
-    # model.add(Conv2D(32, (3,3), padding='same', input_shape=(28,28,3), activation="relu"))
-    # model.add(Conv2D(32, (3,3), activation="relu"))
-    # model.add(MaxPooling2D(pool_size=(2,2)))
-    # model.add(Dropout(0.25))
-
-    # model.add(Conv2D(64, (3,3), padding='same', activation="relu"))
-    # model.add(Conv2D(64, (3,3), activation="relu"))
-    # model.add(MaxPooling2D(pool_size=(2,2)))
-    # model.add(Dropout(0.25))
-
-    # model.add(Flatten())
-    # model.add(Dense(512, activation="relu"))
-    # model.add(Dropout(0.5))
-    # model.add(Dense(8, activation="softmax"))
-
-    # print(model.summary())
-    # plot_model(model, 
-    #            to_file='figures/CNN_Model_test1.png', 
-    #            show_shapes=True,
-    #             show_dtype=False,
-    #             show_layer_names=False,
-    #             rankdir="TB",
-    #             expand_nested=False,
-    #             dpi=200,
-    #             show_layer_activations=True,
-    #             show_trainable=False)
-
-    # model.compile(loss='categorical_crossentropy',
-    #           optimizer='adam',
-    #           metrics=['accuracy'])
-    
-    # weights = class_imbalance_handling(train_dataset)
-    # history = model.fit(train_dataset.imgs, train_labels, 
-    #           epochs=10,
-    #           callbacks=[tf.keras.callbacks.EarlyStopping(patience=10)],
-    #           validation_data=(validation_dataset.imgs, val_labels),
-    #         shuffle=True,
-    #         class_weight=weights)
+    x_train = np.array(train_dataset.imgs).reshape(546, -1)
+    x_val = np.array(validation_dataset.imgs).reshape(78, -1)
+    x_test = np.array(test_dataset.imgs).reshape(156, -1)
+    y_train = np.array(train_dataset.labels)
+    y_val = np.array(validation_dataset.labels)
+    y_test = np.array(test_dataset.labels)
+    descision_tree_training(x_train, x_val, x_test, y_train, y_val, y_test)
     
     # save_model(model, "CNN_model_task1")
 
