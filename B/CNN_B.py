@@ -147,7 +147,7 @@ def evaluate_model(true_labels, predicted_labels, predict_probs, label_names):
 def plot_accuray_loss(model_history):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(20,6), dpi=160)
     accuracy = model_history.history['accuracy']
-    validation_accuracy = mode=model_history.history['val_accuracy']
+    validation_accuracy = model_history.history['val_accuracy']
     epochs = range(1, len(accuracy)+1)
     ax1.plot(epochs, accuracy, label="Training Accuracy")
     ax1.plot(epochs, validation_accuracy, label="Validation Accuracy")
