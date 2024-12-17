@@ -13,6 +13,8 @@ import tensorflow as tf
 #from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Activation, Dropout, Flatten, Dense
+from keras.optimizers import Adam
+from keras.regularizers import l2, l1
 from PIL import ImageFont
 
  
@@ -135,14 +137,15 @@ def evaluate_model(true_labels, predicted_labels, predict_probs, label_names):
     print(classification_report(true_labels, predicted_labels, target_names=label_names))
 
     matrix = confusion_matrix(true_labels, predicted_labels)
-    print("Confusion Matrix : ")
 
-    ConfusionMatrixDisplay(matrix, display_labels=label_names).plot(cmap=plt.cm.Blues)
-    if label_names is not None:
-        tick_marks = np.arange(len(label_names))
-        plt.xticks(tick_marks, label_names, rotation=45)
-        plt.yticks(tick_marks, label_names)
-        plt.savefig('figures/Confusion_Matrix_test1.png')
+    plt.figure(figsize=(10, 7), dpi=200)
+    ConfusionMatrixDisplay(matrix, display_labels=label_names).plot(cmap=plt.cm.Blues, xticks_rotation='vertical')
+    # if label_names is not None:
+    #     tick_marks = np.arange(len(label_names))
+        # plt.xticks(tick_marks, label_names, rotation=45)
+        # plt.yticks(tick_marks, label_names)
+    plt.title("Confusion Matrix for CNN")
+    plt.savefig('figures/Confusion_Matrix_test1.png', bbox_inches = 'tight')
 
 def plot_accuray_loss(model_history):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(20,6), dpi=160)
@@ -152,6 +155,8 @@ def plot_accuray_loss(model_history):
     ax1.plot(epochs, accuracy, label="Training Accuracy")
     ax1.plot(epochs, validation_accuracy, label="Validation Accuracy")
     ax1.set_title('Training and validation accuracy')
+    ax1.set_xlabel('Number of Epoch')
+    ax1.set_ylabel('Accuracy')
     ax1.legend()
     ax1.grid()
 
@@ -161,15 +166,11 @@ def plot_accuray_loss(model_history):
     ax2.plot(epochs, loss, label="Training loss")
     ax2.plot(epochs, val_loss, label="Validation loss")
     ax2.set_title('Training and validation loss')
+    ax2.set_xlabel('Number of Epoch')
+    ax2.set_ylabel('Loss')
     ax2.legend()
     ax2.grid()
     fig.savefig('figures/CNN_accuracy_loss_test1.png')
-
-def data_augmentation_visualisation(train_dataset):
-    datagen = tf.keras.Sequential([
-        layers.experimental.preprocessing.RandomFlip("horizontal_and_vertical"),
-        layers.experimental.preprocessing.RandomRotation(0.2)])
-    return datagen
 
 def class_imbalance_handling(train_dataset):
     blood_class_weights = class_weight.compute_class_weight('balanced',
@@ -224,7 +225,7 @@ if __name__=="__main__":
 
     print(model.summary())
     plot_model(model, 
-               to_file='figures/CNN_Model_test1.png', 
+               to_file='figures/CNN_Model_testB.png', 
                show_shapes=True,
                 show_dtype=False,
                 show_layer_names=False,
@@ -235,18 +236,19 @@ if __name__=="__main__":
                 show_trainable=False)
 
     model.compile(loss='categorical_crossentropy',
-              optimizer='adam',
+              optimizer=Adam(learning_rate=0.001),
               metrics=['accuracy'])
     
     weights = class_imbalance_handling(train_dataset)
     history = model.fit(train_dataset.imgs, train_labels, 
-              epochs=10,
+              epochs=40,
               callbacks=[tf.keras.callbacks.EarlyStopping(patience=10)],
               validation_data=(validation_dataset.imgs, val_labels),
+              batch_size=32,
             shuffle=True,
             class_weight=weights)
     
-    save_model(model, "CNN_model_task1")
+    save_model(model, "CNN_model_taskB_final")
 
     test_dataset_prob = model.predict(test_dataset.imgs, verbose=0)
     test_predict_labels = np.argmax(test_dataset_prob, axis=-1)
