@@ -23,59 +23,6 @@ from medmnist import INFO
 
 
 
-def dataset_download(dataset_name):
-
-    """Download dataset.
-
-    This function downloads the BloodMNIST dataset from the medmnist library
-
-    Args:
-            dataset_name(str): The dataset name to be downloaded
-
-    Returns:
-            Training, validation and test datasets.
-
-    """
-
-    try:
-
-        # Setting the correct parameters to download the dataset
-        print(f"downloading the MedMNIST dataset. Source information: MedMNIST v{medmnist.__version__} @ {medmnist.HOMEPAGE} ")
-        download = True
-        dataset_info = INFO[dataset_name]
-        dataset_class = getattr(medmnist, dataset_info['python_class'])
-
-        # Performing data split
-        train_dataset = dataset_class(split='train', download=download)
-        validation_dataset = dataset_class(split='val', download=download)
-        test_dataset = dataset_class(split='test', download=download)        
-
-        # Adding channels to the images
-        if train_dataset.imgs.ndim == 3:
-            print("Adding channel to images...")
-            train_dataset.imgs = np.expand_dims(train_dataset.imgs, axis=-1)
-
-        if validation_dataset.imgs.ndim == 3:
-            print("Adding channel to images...")
-            validation_dataset.imgs = np.expand_dims(validation_dataset.imgs, axis=-1)
-        
-        if test_dataset.imgs.ndim == 3:
-            print("Adding channel to images...")
-            test_dataset.imgs = np.expand_dims(test_dataset.imgs, axis=-1)
-
-        # Outputting the shapes of the datasets.
-        print("Shapes of images")
-        print(f"Training shape: {str(train_dataset.imgs.shape)}")
-        print(f"Validation shape: {str(validation_dataset.imgs.shape)}")
-        print(f"Testing shape: {str(test_dataset.imgs.shape)}")
-
-        return train_dataset, validation_dataset, test_dataset
-    
-    except Exception as e:
-        print(f"Downloading breastMNIST dataset failed. Error: {e}")
-
-
-
 def preprocess_check(train_dataset, validation_dataset, test_dataset):
     """Pre-process check.
 
@@ -106,33 +53,6 @@ def preprocess_check(train_dataset, validation_dataset, test_dataset):
         print(f"Found {len(test_dataset.imgs)}, should be 3421.")
     else:
         print("SUCCESS: No missing images in test dataset.")
-
-
-
-def normalize_dataset(train_dataset, validation_dataset, test_dataset):
-    """Normalize dataset.
-
-    This function performs data transform via normalization.
-
-    Args:
-            training, validation and test datasets.
-
-    Returns:
-            normalized training, validation and test datasets.
-
-    """
-
-    try:
-
-        # Performing data transformation via normalization
-        train_dataset.imgs = train_dataset.imgs/255.0
-        validation_dataset.imgs = validation_dataset.imgs/255.0
-        test_dataset.imgs = test_dataset.imgs/255.0
-
-        return train_dataset, validation_dataset, test_dataset
-    
-    except Exception as e:
-        print(f"Data normalization failed. Error: {e}")
 
 
 
