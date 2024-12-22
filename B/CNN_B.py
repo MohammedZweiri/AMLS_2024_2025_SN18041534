@@ -103,7 +103,7 @@ def evaluate_model(true_labels, predicted_labels, predict_probs, label_names):
         plt.figure(figsize=(10, 7), dpi=200)
         ConfusionMatrixDisplay(matrix, display_labels=label_names).plot(cmap=plt.cm.Blues, xticks_rotation='vertical')
         plt.title("Confusion Matrix for CNN")
-        plt.savefig('figures/Confusion_Matrix_test1.png', bbox_inches = 'tight')
+        plt.savefig('B/figures/Confusion_Matrix_test1.png', bbox_inches = 'tight')
 
     except Exception as e:
         print(f"Evaluating the model has failed. Error: {e}")
