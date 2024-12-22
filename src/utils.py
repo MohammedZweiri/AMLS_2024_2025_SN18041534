@@ -220,3 +220,32 @@ def plot_accuray_loss(task_name, model_history):
     
     except Exception as e:
         print(f"Plotting accuracy and loss has failed. Error: {e}")
+
+
+def visualise_subset(task_name, train_dataset):
+    """Visualise Subset.
+
+    This function visualises a subset of the training dataset images data.
+
+    Args:
+            training datasets.
+
+    Returns:
+            Images saved in figures folder.
+
+    """
+
+    try:
+
+        plt.figure(figsize=(12,10))
+        for x in range(9):
+            value = 330+1+x
+            plt.subplot(value)
+            plt.imshow(train_dataset.imgs[x], cmap=plt.get_cmap('gray'))
+            plt.title(f"Class {train_dataset.labels[x][0]}")
+
+        plt.savefig(f"{task_name}/figures/subset_images.jpeg")
+        plt.close()
+
+    except Exception as e:
+        print(f"Visualising subset failed. Error: {e}")
