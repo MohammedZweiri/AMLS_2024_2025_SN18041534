@@ -136,36 +136,6 @@ def normalize_dataset(train_dataset, validation_dataset, test_dataset):
 
 
 
-def visualise_subset(train_dataset):
-    """Visualise Subset.
-
-    This function visualises a subset of the training dataset images data.
-
-    Args:
-            training datasets.
-
-    Returns:
-            Images saved in figures folder.
-
-    """
-
-    try:
-
-        plt.figure(figsize=(12,10))
-        for x in range(9):
-            value = 330+1+x
-            plt.subplot(value)
-            plt.imshow(train_dataset.imgs[x], cmap=plt.get_cmap('gray'))
-            plt.title(f"Class {train_dataset.labels[x][0]}")
-
-        plt.savefig("figures/subset_images.jpeg")
-        plt.close()
-
-    except Exception as e:
-        print(f"Visualising subset failed. Error: {e}")
-
-
-
 def descision_tree_training(x_train, x_val, x_test, y_train, y_val, y_test):
     """Visualise Subset.
 
@@ -266,7 +236,7 @@ def evaluate_model(true_labels, predicted_labels, label_names):
             plt.title("Decision Tree Confusion Matrix Display")
             plt.xticks(tick_marks, label_names)
             plt.yticks(tick_marks, label_names)
-            plt.savefig('figures/Confusion_Matrix_decision_tree.png')
+            plt.savefig('A/figures/Confusion_Matrix_decision_tree.png')
         plt.close()
 
     except Exception as e:
