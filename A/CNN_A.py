@@ -12,6 +12,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+
+
 #==========this libraries for the models =============
 from tensorflow import keras
 from keras.utils import to_categorical, plot_model
@@ -21,17 +24,15 @@ from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Activation, Dropout, Flatten, Dense, BatchNormalization, RandomFlip, RandomZoom, RandomRotation
 from keras.optimizers import Adam
 from keras.regularizers import l2, l1
-from PIL import ImageFont
-
  
 #========== This libraries for getting the result of accurcy and confusion matrix of the model =======
 from sklearn.metrics import confusion_matrix, classification_report,accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, ConfusionMatrixDisplay
 from pathlib import Path
 from sklearn.utils import shuffle
 from keras.models import model_from_json
+from keras import Input
 from sklearn.utils import class_weight
 import visualkeras
-import medmnist
 from medmnist import INFO
 from src import utils
 
@@ -96,6 +97,7 @@ def evaluate_model(true_labels, predict_probs, label_names):
         ConfusionMatrixDisplay(matrix, display_labels=label_names).plot(cmap=plt.cm.Blues)
         if label_names is not None:
             tick_marks = np.arange(len(label_names))
+            plt.title("CNN Confusion Matrix Display")
             plt.xticks(tick_marks, label_names)
             plt.yticks(tick_marks, label_names)
             plt.savefig('A/figures/Confusion_Matrix_test1.png')
@@ -134,11 +136,12 @@ def class_imbalance_handling(train_dataset):
     
     except Exception as e:
         print(f"Class imbalance handling has failed. Error: {e}")
+        
 
-def CNN_model(train_dataset, validation_dataset, test_dataset):
-    """CNN model testing
+def CNN_model_training(train_dataset, validation_dataset, test_dataset):
+    """CNN model training
 
-    This function loads the final CNN model and tests it on the test dataset. Then, it will evaluate it and produce the accuracy and plot loss.
+    This function traings the CNN models and tests it on the test dataset. Then, it will evaluate it and produce the accuracy and plot loss.
 
     Args:
             training, validation and test datasets.
@@ -149,7 +152,7 @@ def CNN_model(train_dataset, validation_dataset, test_dataset):
     try:
 
         # Class labels
-        class_labels = ['Benign','Malignant']
+        class_labels = ['Malignant','Benign']
 
         # Convert to numpy array
         train_imgs = np.array(train_dataset.imgs)
@@ -158,20 +161,23 @@ def CNN_model(train_dataset, validation_dataset, test_dataset):
         val_labels = np.array(validation_dataset.labels)
 
         data_augmentation = Sequential([
-            RandomFlip("horizontal_and_vertical"),
+            RandomFlip(mode="horizontal_and_vertical"),
             RandomRotation(0.2),
-            RandomZoom(0.2),
-        ])
-
+            RandomZoom(0.3),
+            ]) 
+ 
+        # CNN model
         model = Sequential()
+        model.add(Input(shape=(28,28,1)))
         model.add(data_augmentation)
-        model.add(Conv2D(128, (6,6), padding='same', input_shape=(28,28,1), activation="relu"))
+        model.add(Conv2D(32, (3,3), padding='same', activation="relu"))
         model.add(BatchNormalization())
-        model.add(MaxPooling2D(pool_size=(2,2)))
-        model.add(Dropout(0.25))
-        model.add(Conv2D(96, (6,6), kernel_initializer='he_uniform', activation="relu"))
-        model.add(MaxPooling2D(pool_size=(2,2)))
-        model.add(Dropout(0.25))
+        model.add(MaxPooling2D(pool_size=(2,2), strides=(1,1), padding='same'))
+        #model.add(Dropout(0.25))
+        model.add(Conv2D(32, (3,3), padding='same', activation="relu"))
+        model.add(Conv2D(64, (3,3), kernel_initializer='he_uniform', activation="relu"))
+        model.add(Conv2D(128, (3,3), padding='same', activation="relu"))
+        model.add(MaxPooling2D(pool_size=(2,2), strides=(1,1), padding='same'))
 
         model.add(Flatten())
         model.add(Dense(512, activation="relu"))
@@ -185,7 +191,7 @@ def CNN_model(train_dataset, validation_dataset, test_dataset):
 
         # Plot the CNN model
         plot_model(model, 
-                to_file='A/figures/CNN_Model_test2.png', 
+                to_file='A/figures/CNN_Model_taskA_final_add.png', 
                 show_shapes=True,
                     show_dtype=False,
                     show_layer_names=False,
@@ -203,22 +209,54 @@ def CNN_model(train_dataset, validation_dataset, test_dataset):
         # Handle the class imbalance.
         weights = class_imbalance_handling(train_dataset)
 
+        augmented_data = data_augmentation(train_imgs)
+        print(f"Augmented data size is {str(augmented_data.shape)}")
         # Fit the CNN model
-        history = model.fit(train_imgs, train_labels,
+        history = model.fit(augmented_data, train_labels,
                 epochs=100,
                 callbacks=[tf.keras.callbacks.EarlyStopping(patience=10)],
                 validation_data=(val_imgs, val_labels),
-                batch_size=64,
+                batch_size=32,
                 shuffle=True,
                 class_weight=weights)
         
-        utils.save_model("A",model, "CNN_model_taskB")
+        utils.save_model("A",model, "CNN_model_taskA_final_add")
 
         # Evaluate the model
         test_dataset_prob = model.predict(test_dataset.imgs, verbose=0)
         #test_predict_labels = np.argmax(test_dataset_prob, axis=-1)
         evaluate_model(test_dataset.labels, test_dataset_prob, class_labels)
         utils.plot_accuray_loss("A",history)
+
+    except Exception as e:
+        print(f"Running the CNN model failed. Error: {e}")
+
+
+def CNN_model_testing(test_dataset):
+    """CNN model testing
+
+    This function loads the final CNN model and tests it on the test dataset. Then, it will evaluate it and produce the accuracy and plot loss.
+
+    Args:
+            training, validation and test datasets.
+    
+
+    """
+
+    try:
+
+        # Class labels
+        class_labels = ['Malignant','Benign']
+
+        # load the CNN model
+        model = utils.load_model("A", "CNN_model_taskA_final")
+
+        # Evaluate the model
+        test_dataset_prob = model.predict(test_dataset.imgs, verbose=0)
+
+        #test_predict_labels = np.argmax(test_dataset_prob, axis=-1)
+        evaluate_model(test_dataset.labels, test_dataset_prob, class_labels)
+        
 
     except Exception as e:
         print(f"Running the CNN model failed. Error: {e}")
