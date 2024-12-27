@@ -146,10 +146,10 @@ def class_imbalance_handling(train_dataset):
     except Exception as e:
         print(f"Class imbalance handling has failed. Error: {e}")
 
-def CNN_model(train_dataset, validation_dataset, test_dataset):
-    """CNN model testing
+def CNN_model_training(train_dataset, validation_dataset, test_dataset):
+    """CNN model training
 
-    This function loads the final CNN model and tests it on the test dataset. Then, it will evaluate it and produce the accuracy and plot loss.
+    This function trains the CNN model and tests it on the dataset. Then, it will evaluate it and produce the accuracy and plot loss.
 
     Args:
             training, validation and test datasets.
@@ -174,25 +174,23 @@ def CNN_model(train_dataset, validation_dataset, test_dataset):
         train_labels = to_categorical(train_dataset.labels, num_classes=8)
         val_labels = to_categorical(validation_dataset.labels, num_classes=8)
 
-        # model = Sequential()
+        # CNN model
+        model = Sequential()
 
-        # model.add(Conv2D(32, (3,3), padding='same', input_shape=(28,28,3), activation="relu"))
-        # model.add(Conv2D(32, (3,3), activation="relu"))
-        # model.add(MaxPooling2D(pool_size=(2,2)))
-        # model.add(Dropout(0.25))
+        model.add(Conv2D(32, (3,3), padding='same', input_shape=(28,28,3), activation="relu"))
+        model.add(Conv2D(32, (3,3), activation="relu"))
+        model.add(MaxPooling2D(pool_size=(2,2)))
+        model.add(Dropout(0.25))
 
-        # model.add(Conv2D(64, (3,3), padding='same', activation="relu"))
-        # model.add(Conv2D(64, (3,3), activation="relu"))
-        # model.add(MaxPooling2D(pool_size=(2,2)))
-        # model.add(Dropout(0.25))
+        model.add(Conv2D(64, (3,3), padding='same', activation="relu"))
+        model.add(Conv2D(64, (3,3), activation="relu"))
+        model.add(MaxPooling2D(pool_size=(2,2)))
+        model.add(Dropout(0.25))
 
-        # model.add(Flatten())
-        # model.add(Dense(512, activation="relu"))
-        # model.add(Dropout(0.5))
-        # model.add(Dense(8, activation="softmax"))
-
-        # Load the CNN model
-        model = utils.load_model("B","CNN_model_taskB_final")
+        model.add(Flatten())
+        model.add(Dense(512, activation="relu"))
+        model.add(Dropout(0.5))
+        model.add(Dense(8, activation="softmax"))
 
         # Output the model summary
         print(model.summary())
@@ -226,13 +224,52 @@ def CNN_model(train_dataset, validation_dataset, test_dataset):
                 shuffle=True,
                 class_weight=weights)
         
-        #save_model(model, "CNN_model_taskB_final")
+        # save the CNN model
+        utils.save_model(model, "CNN_model_taskB_final")
 
         # Evaluate the model
         test_dataset_prob = model.predict(test_dataset.imgs, verbose=0)
         test_predict_labels = np.argmax(test_dataset_prob, axis=-1)
         evaluate_model(test_dataset.labels, test_predict_labels, test_dataset_prob, class_labels)
         utils.plot_accuray_loss("B",history)
+
+    except Exception as e:
+        print(f"Running the CNN model failed. Error: {e}")
+
+
+def CNN_model_testing(test_dataset):
+    """CNN model testing
+
+    This function loads the final CNN model and tests it on the test dataset. Then, it will evaluate it and produce the accuracy and plot loss.
+
+    Args:
+            training, validation and test datasets.
+    
+
+    """
+
+    try:
+            
+        # Class labels
+        class_labels = ['basophil',
+                'eosinophil',
+                'erythroblast',
+                'immature granulocytes',
+                'lymphocyte',
+                'monocyte',
+                'neutrophil',
+                'platelet']
+
+        # Load the CNN model
+        model = utils.load_model("B","CNN_model_taskB_final")
+
+        # Output the model summary
+        print(model.summary())
+
+        # Evaluate the model
+        test_dataset_prob = model.predict(test_dataset.imgs, verbose=0)
+        test_predict_labels = np.argmax(test_dataset_prob, axis=-1)
+        evaluate_model(test_dataset.labels, test_predict_labels, test_dataset_prob, class_labels)
 
     except Exception as e:
         print(f"Running the CNN model failed. Error: {e}")
