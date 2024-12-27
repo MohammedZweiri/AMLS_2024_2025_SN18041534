@@ -10,6 +10,10 @@ import numpy as np
 
 
 def Task_A_DT():
+    """ Runs the decision tree training model for the breastMNIST dataset
+
+
+"""
 
     print("Task A via decision tree has started...")
     # Download the dataset    
@@ -40,10 +44,13 @@ def Task_A_DT():
 
     print("Task A via decision tree has finished...")
 
-    return None
 
 def Task_A_CNN():
 
+    """ Runs the CNN model for breastMNIST dataset
+
+
+    """ 
     print("Task A via CNN is starting...")
 
     # Download the dataset
@@ -60,12 +67,16 @@ def Task_A_CNN():
     utils.visualise_subset("A",train_dataset)
 
     # Run the CNN model
-    CNN_A.CNN_model(train_dataset, validation_dataset, test_dataset)
+    CNN_A.CNN_model_testing(test_dataset)
 
     print("Task A via CNN has finished...")
 
 
 def Task_B_CNN():
+    """ Runs the CNN model for bloodMNIST dataset
+
+
+    """
 
     print("Task B via CNN is starting...")
 
@@ -83,7 +94,7 @@ def Task_B_CNN():
     utils.visualise_subset("B", train_dataset)
 
     # Run the CNN model
-    CNN_B.CNN_model(train_dataset, validation_dataset, test_dataset)
+    CNN_B.CNN_model_testing(test_dataset)
 
     print("Task B via CNN has finished...")
 
@@ -101,6 +112,8 @@ if __name__ == "__main__":
     utils.create_directory("./B/figures")
     utils.create_directory("./B/model")
 
+    # Run the required functions depending on user's input
+    
     if args.task == 'task_a':
         Task_A_DT()
         Task_A_CNN()
