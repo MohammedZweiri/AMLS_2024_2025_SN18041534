@@ -5,9 +5,6 @@
 
     """
 
-import cv2 as cv
-import os 
-import pandas as pd 
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -16,20 +13,12 @@ from tensorflow import keras
 from keras.utils import to_categorical, plot_model
 import tensorflow as tf
 from keras.models import Sequential
-from keras.layers import Conv2D, MaxPooling2D, Activation, Dropout, Flatten, Dense
+from keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense
 from keras.optimizers import Adam
-from keras.regularizers import l2, l1
-from PIL import ImageFont
-
  
 #========== This libraries for getting the result of accurcy and confusion matrix of the model =======
-from sklearn.metrics import confusion_matrix, classification_report,accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, ConfusionMatrixDisplay
-from pathlib import Path
-from keras.models import model_from_json
+from sklearn.metrics import confusion_matrix, classification_report,accuracy_score, precision_score, recall_score, f1_score, ConfusionMatrixDisplay
 from sklearn.utils import class_weight
-import visualkeras
-import medmnist
-from medmnist import INFO, Evaluator
 from src import utils
 
 
@@ -103,7 +92,7 @@ def evaluate_model(true_labels, predicted_labels, predict_probs, label_names):
         plt.figure(figsize=(10, 7), dpi=200)
         ConfusionMatrixDisplay(matrix, display_labels=label_names).plot(cmap=plt.cm.Blues, xticks_rotation='vertical')
         plt.title("Confusion Matrix for CNN")
-        plt.savefig('B/figures/Confusion_Matrix_test1.png', bbox_inches = 'tight')
+        plt.savefig('B/figures/Confusion_Matrix_CNN.png', bbox_inches = 'tight')
 
     except Exception as e:
         print(f"Evaluating the model has failed. Error: {e}")
@@ -197,7 +186,7 @@ def CNN_model_training(train_dataset, validation_dataset, test_dataset):
 
         # Plot the CNN model
         plot_model(model, 
-                to_file='B/figures/CNN_Model_testB.png', 
+                to_file='B/figures/CNN_Model_testB_add.png', 
                 show_shapes=True,
                     show_dtype=False,
                     show_layer_names=False,
@@ -225,7 +214,7 @@ def CNN_model_training(train_dataset, validation_dataset, test_dataset):
                 class_weight=weights)
         
         # save the CNN model
-        utils.save_model(model, "CNN_model_taskB_final")
+        utils.save_model(model, "CNN_model_taskB_final_add")
 
         # Evaluate the model
         test_dataset_prob = model.predict(test_dataset.imgs, verbose=0)
