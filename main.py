@@ -16,6 +16,7 @@ def Task_A_DT():
 """
 
     print("Task A via decision tree has started...")
+    print('\n')
     # Download the dataset    
     dataset_name = "breastmnist"
     train_dataset, validation_dataset, test_dataset = utils.dataset_download(dataset_name)
@@ -42,16 +43,18 @@ def Task_A_DT():
     # Perform the decision tree training
     decision_tree.descision_tree_training(x_train, x_val, x_test, y_train, y_val, y_test)
 
+    print('\n')
     print("Task A via decision tree has finished...")
 
 
-def Task_A_CNN():
+def Task_A_CNN(decision):
 
     """ Runs the CNN model for breastMNIST dataset
 
 
     """ 
     print("Task A via CNN is starting...")
+    print('\n')
 
     # Download the dataset
     dataset_name = "breastmnist"
@@ -67,18 +70,25 @@ def Task_A_CNN():
     utils.visualise_subset("A",train_dataset)
 
     # Run the CNN model
-    CNN_A.CNN_model_testing(test_dataset)
 
+    if decision == 'train':
+        CNN_A.CNN_model_training(train_dataset, validation_dataset, test_dataset)
+
+    elif decision == 'test':
+        CNN_A.CNN_model_testing(test_dataset)
+
+    print('\n')
     print("Task A via CNN has finished...")
 
 
-def Task_B_CNN():
+def Task_B_CNN(decision):
     """ Runs the CNN model for bloodMNIST dataset
 
 
     """
 
     print("Task B via CNN is starting...")
+    print('\n')
 
     # Download the dataset
     dataset_name = "bloodmnist"
@@ -94,8 +104,14 @@ def Task_B_CNN():
     utils.visualise_subset("B", train_dataset)
 
     # Run the CNN model
-    CNN_B.CNN_model_testing(test_dataset)
 
+    if decision == 'train':
+        CNN_B.CNN_model_training(train_dataset, validation_dataset, test_dataset)
+        
+    elif decision == 'test':
+        CNN_B.CNN_model_testing(test_dataset)
+
+    print('\n')
     print("Task B via CNN has finished...")
 
 
@@ -104,7 +120,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-t', '--task', default='all',
                         help ='select the task')
+    parser.add_argument('-d', '--decision', default='test',
+                        help ='select the task')
+    
     args = parser.parse_args()
+
+    task = args.task
+    decision = args.decision
 
     # Creating the figures and models folders under each task folder
     utils.create_directory("./A/figures")
@@ -118,17 +140,17 @@ if __name__ == "__main__":
     
     # Run the required functions depending on user's input
     
-    if args.task == 'task_a':
+    if task == 'task_a':
         Task_A_DT()
-        Task_A_CNN()
+        Task_A_CNN(decision)
 
-    elif args.task == 'task_b':
-        Task_B_CNN()
+    elif task == 'task_b':
+        Task_B_CNN(decision)
 
-    elif args.task == 'all':
+    elif task == 'all':
         Task_A_DT()
-        Task_A_CNN()
-        Task_B_CNN()
+        Task_A_CNN(decision)
+        Task_B_CNN(decision)
 
     
 
