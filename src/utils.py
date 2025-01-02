@@ -59,9 +59,9 @@ def dataset_download(dataset_name):
         dataset_class = getattr(medmnist, dataset_info['python_class'])
 
         # Performing data split
-        train_dataset = dataset_class(split='train', download=download)
-        validation_dataset = dataset_class(split='val', download=download)
-        test_dataset = dataset_class(split='test', download=download)
+        train_dataset = dataset_class(root=f"Datasets" ,split='train', download=download)
+        validation_dataset = dataset_class(root="Datasets", split='val', download=download)
+        test_dataset = dataset_class(root="Datasets", split='test', download=download)
 
         # Adding channels to the images
         if train_dataset.imgs.ndim == 3:
@@ -138,7 +138,7 @@ def save_model(task_name,model, model_name):
         file_path.write_text(model_structure)
 
         # Saves the weights as .h5 file
-        model.save_weights(f"{task_name}/{model_name}.weights.h5")
+        model.save_weights(f"{task_name}/model/{model_name}.weights.h5")
 
     except Exception as e:
         print(f"Saving the CNN model failed. Error: {e}")
@@ -168,7 +168,7 @@ def load_model(task_name, model_name):
         model = model_from_json(model_structure)
 
         # Load the CNN weights
-        model.load_weights(f"{task_name}/{model_name}.weights.h5")
+        model.load_weights(f"{task_name}/model/{model_name}.weights.h5")
 
         return model
     
@@ -216,7 +216,7 @@ def plot_accuray_loss(task_name, model_history):
         ax2.grid()
 
         # Save the subplots file.
-        fig.savefig(f'{task_name}/figures/CNN_accuracy_loss_test1.png')
+        fig.savefig(f'{task_name}/figures/CNN_accuracy_loss.png')
     
     except Exception as e:
         print(f"Plotting accuracy and loss has failed. Error: {e}")
