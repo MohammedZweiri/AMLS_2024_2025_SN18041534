@@ -1,4 +1,4 @@
-A/figures/
-B/figures/
-Datasets/BloodMNIST/
-Datasets/BreastMNIST/
+A/figures/*
+B/figures/*
+Datasets/BloodMNIST/*
+Datasets/BreastMNIST/*
