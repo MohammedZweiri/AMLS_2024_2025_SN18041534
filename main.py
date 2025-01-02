@@ -112,6 +112,10 @@ if __name__ == "__main__":
     utils.create_directory("./B/figures")
     utils.create_directory("./B/model")
 
+    # Create Datasets folder
+    utils.create_directory("Datasets")
+
+    
     # Run the required functions depending on user's input
     
     if args.task == 'task_a':
