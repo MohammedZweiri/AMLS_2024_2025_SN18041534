@@ -214,7 +214,7 @@ def CNN_model_training(train_dataset, validation_dataset, test_dataset):
                 class_weight=weights)
         
         # save the CNN model
-        utils.save_model(model, "CNN_model_taskB_final_add")
+        utils.save_model("B",model, "CNN_model_taskB_final_add")
 
         # Evaluate the model
         test_dataset_prob = model.predict(test_dataset.imgs, verbose=0)
