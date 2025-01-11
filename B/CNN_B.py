@@ -15,6 +15,7 @@ import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense
 from keras.optimizers import Adam
+from keras import Input
  
 #========== This libraries for getting the result of accurcy and confusion matrix of the model =======
 from sklearn.metrics import confusion_matrix, classification_report,accuracy_score, precision_score, recall_score, f1_score, ConfusionMatrixDisplay
@@ -165,8 +166,8 @@ def CNN_model_training(train_dataset, validation_dataset, test_dataset):
 
         # CNN model
         model = Sequential()
-
-        model.add(Conv2D(32, (3,3), padding='same', input_shape=(28,28,3), activation="relu"))
+        model.add(Input(shape=(28,28,3)))
+        model.add(Conv2D(32, (3,3), padding='same', activation="relu"))
         model.add(Conv2D(32, (3,3), activation="relu"))
         model.add(MaxPooling2D(pool_size=(2,2)))
         model.add(Dropout(0.3))
@@ -223,7 +224,7 @@ def CNN_model_training(train_dataset, validation_dataset, test_dataset):
         utils.plot_accuray_loss("B",history)
 
     except Exception as e:
-        print(f"Running the CNN model failed. Error: {e}")
+        print(f"Training and saving the CNN model failed. Error: {e}")
 
 
 def CNN_model_testing(test_dataset):
@@ -261,4 +262,4 @@ def CNN_model_testing(test_dataset):
         evaluate_model(test_dataset.labels, test_predict_labels, test_dataset_prob, class_labels)
 
     except Exception as e:
-        print(f"Running the CNN model failed. Error: {e}")
+        print(f"Loading and testing the CNN model failed. Error: {e}")
