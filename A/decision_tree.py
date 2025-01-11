@@ -78,6 +78,7 @@ def descision_tree_training(x_train, x_val, x_test, y_train, y_val, y_test):
         maximum_No_features = []
         minimum_sample_number = []
 
+        print("Currently iterating through hyper-parameters. Please wait...")
         # Iterate through sample number, maxmimum features and maxmimum tree depth and output the one with highest accuracy
         for sample_number in range(2,31):
             for maximum_features in range(1,30):
