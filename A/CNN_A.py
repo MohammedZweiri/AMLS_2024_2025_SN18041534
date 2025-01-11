@@ -210,7 +210,7 @@ def CNN_model_training(train_dataset, validation_dataset, test_dataset):
         utils.plot_accuray_loss("A",history)
 
     except Exception as e:
-        print(f"Running the CNN model failed. Error: {e}")
+        print(f"Training and saving the CNN model failed. Error: {e}")
 
 
 def CNN_model_testing(test_dataset):
@@ -232,6 +232,9 @@ def CNN_model_testing(test_dataset):
         # load the CNN model
         model = utils.load_model("A", "CNN_model_taskA_final")
 
+        # Output the model summary
+        print(model.summary())
+
         # Evaluate the model
         test_predict_prob = model.predict(test_dataset.imgs, verbose=0)
         test_predict_labels = np.where(test_predict_prob > 0.5, 1, 0)
@@ -239,4 +242,4 @@ def CNN_model_testing(test_dataset):
         
 
     except Exception as e:
-        print(f"Running the CNN model failed. Error: {e}")
+        print(f"Loading and testing the CNN model failed. Error: {e}")
