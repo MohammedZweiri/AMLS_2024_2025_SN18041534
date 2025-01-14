@@ -128,11 +128,9 @@ if __name__ == "__main__":
     task = args.task
     decision = args.decision
 
-    # Creating the figures and models folders under each task folder
+    # Creating the figures folders under each task folder
     utils.create_directory("./A/figures")
-    utils.create_directory("./A/model")
     utils.create_directory("./B/figures")
-    utils.create_directory("./B/model")
 
     # Create Datasets folder
     utils.create_directory("Datasets")
