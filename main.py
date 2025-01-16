@@ -15,7 +15,7 @@ def Task_A_DT():
 
 """
 
-    print("Task A via decision tree has started...")
+    print("################ Task A via decision tree has started ################")
     print('\n')
     # Download the dataset    
     dataset_name = "breastmnist"
@@ -44,7 +44,7 @@ def Task_A_DT():
     decision_tree.descision_tree_training(x_train, x_val, x_test, y_train, y_val, y_test)
 
     print('\n')
-    print("Task A via decision tree has finished...")
+    print("################ Task A via decision tree has finished ################")
 
 
 def Task_A_CNN(decision):
@@ -53,7 +53,7 @@ def Task_A_CNN(decision):
 
 
     """ 
-    print("Task A via CNN is starting...")
+    print("################ Task A via CNN is starting ################")
     print('\n')
 
     # Download the dataset
@@ -78,7 +78,7 @@ def Task_A_CNN(decision):
         CNN_A.CNN_model_testing(test_dataset)
 
     print('\n')
-    print("Task A via CNN has finished...")
+    print("################ Task A via CNN has finished ################")
 
 
 def Task_B_CNN(decision):
@@ -87,7 +87,7 @@ def Task_B_CNN(decision):
 
     """
 
-    print("Task B via CNN is starting...")
+    print("################ Task B via CNN is starting ################")
     print('\n')
 
     # Download the dataset
@@ -112,7 +112,7 @@ def Task_B_CNN(decision):
         CNN_B.CNN_model_testing(test_dataset)
 
     print('\n')
-    print("Task B via CNN has finished...")
+    print("################ Task B via CNN has finished ################")
 
 
 if __name__ == "__main__":
