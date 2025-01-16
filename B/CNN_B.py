@@ -7,8 +7,6 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-
-#==========this libraries for the models =============
 from tensorflow import keras
 from keras.utils import to_categorical, plot_model
 import tensorflow as tf
@@ -16,8 +14,6 @@ from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense
 from keras.optimizers import Adam
 from keras import Input
- 
-#========== This libraries for getting the result of accurcy and confusion matrix of the model =======
 from sklearn.metrics import confusion_matrix, classification_report,accuracy_score, precision_score, recall_score, f1_score, ConfusionMatrixDisplay
 from sklearn.utils import class_weight
 from src import utils
@@ -189,13 +185,7 @@ def CNN_model_training(train_dataset, validation_dataset, test_dataset):
         plot_model(model, 
                 to_file='B/figures/CNN_Model_testB_add.png', 
                 show_shapes=True,
-                    show_dtype=False,
-                    show_layer_names=False,
-                    rankdir="TB",
-                    expand_nested=False,
-                    dpi=200,
-                    show_layer_activations=True,
-                    show_trainable=False)
+                show_layer_activations=True)
 
         # Compile the CNN model
         model.compile(loss='categorical_crossentropy',

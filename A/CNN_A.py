@@ -5,8 +5,6 @@
     """
 
 
-#========Import required libraries==================
-import cv2 as cv
 import os 
 import pandas as pd 
 import matplotlib.pyplot as plt
@@ -14,17 +12,12 @@ import numpy as np
 
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
-
-#==========this libraries for the models =============
 from tensorflow import keras
 from keras.utils import plot_model
 import tensorflow as tf
-import torch
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense
-from keras.optimizers import Adam
- 
-#========== This libraries for getting the result of accurcy and confusion matrix of the model =======
+from keras.optimizers import Adam 
 from sklearn.metrics import confusion_matrix, classification_report,accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, ConfusionMatrixDisplay
 from keras import Input
 from sklearn.utils import class_weight
