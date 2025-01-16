@@ -4,23 +4,10 @@
 
     """
 
-#========Import required libraries==================
-import cv2 as cv
-import os 
-import pandas as pd 
 import matplotlib.pyplot as plt
 import numpy as np
-import time
-
- 
-#========== This libraries for getting the result of accurcy and confusion matrix of the model =======
 from sklearn.metrics import confusion_matrix, classification_report,accuracy_score, precision_score, recall_score, f1_score, ConfusionMatrixDisplay
-from pathlib import Path
 from sklearn.tree import DecisionTreeClassifier
-
-import medmnist
-from medmnist import INFO
-
 
 
 def preprocess_check(train_dataset, validation_dataset, test_dataset):
