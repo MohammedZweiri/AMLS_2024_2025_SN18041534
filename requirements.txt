@@ -1,17 +1,13 @@
 # Libraries
-pylint
 numpy
 pandas
 folktables
-graphviz
-opencv-python
 tensorflow
+pathlib
+argparse
 keras
 scikit-learn
 matplotlib
-seaborn
-fairlearn
-ucimlrepo
 shap
 datetime
 medmnist
