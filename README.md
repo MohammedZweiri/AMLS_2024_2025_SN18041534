@@ -9,16 +9,16 @@ There two tasks for this assignment:
 2. Folder `A` contains two python files for Task A:
    - decision_tree.py, which runs the decision tree model on BreastMNIST.
    - CNN_A.py, which runs the CNN model on the BreastMNIST.
-3. Folder `B` contains two python files for Task B:
+3. Folder `B` contains one python file for Task B:
    - CNN_B.py, which runs the CNN model on the BloodMNIST.
 4. Both folders `A` & `B` contain `model` folder which contains CNN model files needed when running the scripts.
 5. `src` folder contain `utils.py` script. This file is called by all ML model scripts in this assignment to perform a centralized tasks, such as: 
    - Downloading BreastMNIST and BloodMNIST dataset.
-   - Split data into train, validation and testing datasets.
+   - Split dataset into train, validation and test.
    - Perform pre-process check.
    - Normalize the dataset.
-   - output a subset of a dataset.
-   - plot accuracy and loss graphs.
+   - Output a subset of a dataset.
+   - Plot accuracy and loss graphs.
    - Save CNN model as json and .weight.h5 file
    - Load CNN model.
    - Creating directories.
@@ -26,7 +26,7 @@ There two tasks for this assignment:
 ## Important note before the procedure.
 1. `main.py` has two arguments set.
    - `task`, which the user can define what tasks they wish to run. You can run either A using `-t task_a` argument, or B using `-t task_b` or both by providing no input. If no input was provided, then the default is set to `all`, which runs both tasks consecutively.
-   - `decision`, which the user can define how to run the models. You can either run on the training, validation and test dataset (training the model from scratch) using `-d train` or test the model using test dataset by adding no input. The default is set to `test`.
+   - `decision`, which the user can define how to run the models. You can either run on the training, validation and test dataset (training the model from scratch) using `-d train` or test the loaded model using test dataset by adding no input. The default is set to `test`.
 2. `Datasets` folder does not exist in the repository. However, running the `main.py` script runs through creating that folder and then adding data into it shortly.
 
   
